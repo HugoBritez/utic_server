@@ -1,0 +1,11 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "./utic-dev-server"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+
+[env]
+PORT = "3000"
