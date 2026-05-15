@@ -74,7 +74,12 @@ func main() {
 		})
 	})
 
-	fmt.Println("Server running on :3000")
-	log.Fatal(http.ListenAndServe(":3000", r))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	fmt.Printf("Server running on :%s\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
  
