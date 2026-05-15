@@ -3,13 +3,13 @@ package services
 import "context"
 
 type ProjectInfo struct {
-	Name        string
-	Description string
-	StudentEmail string
-	StudentName string
-	TechStack   []string
-	Categories  []string
-	Stars       int
+	Name         string   `json:"name"`
+	Description  string   `json:"description"`
+	StudentEmail string   `json:"student_email"`
+	StudentName  string   `json:"student_name"`
+	TechStack    []string `json:"tech_stack"`
+	Categories   []string `json:"categories"`
+	Stars        int      `json:"stars"`
 }
 
 type AIService interface {

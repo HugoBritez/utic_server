@@ -100,6 +100,8 @@ func (r *ProjectRepository) Update(ctx context.Context, project *entities.Projec
 		ID:           project.ID,
 		Name:         project.Name,
 		Description:  project.Description,
+		StudentEmail: project.StudentEmail,
+		StudentName:  project.StudentName,
 		TechStack:    project.TechStack,
 		Categories:   project.Categories,
 		Stars:        project.Stars,

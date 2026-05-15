@@ -208,25 +208,29 @@ func (q *Queries) StarProject(ctx context.Context, id string) (Projects, error) 
 
 const updateProject = `-- name: UpdateProject :one
 UPDATE projects
-SET name = ?, description = ?, tech_stack = ?, categories = ?, stars = ?, repo_url = ?
+SET name = ?, description = ?, student_email = ?, student_name = ?, tech_stack = ?, categories = ?, stars = ?, repo_url = ?
 WHERE id = ?
 RETURNING id, name, description, student_email, student_name, tech_stack, categories, stars, repo_url, created_at
 `
 
 type UpdateProjectParams struct {
-	Name        string
-	Description string
-	TechStack   string
-	Categories  string
-	Stars       int64
-	RepoUrl     string
-	ID          string
+	Name         string
+	Description  string
+	StudentEmail string
+	StudentName  string
+	TechStack    string
+	Categories   string
+	Stars        int64
+	RepoUrl      string
+	ID           string
 }
 
 func (q *Queries) UpdateProject(ctx context.Context, arg UpdateProjectParams) (Projects, error) {
 	row := q.db.QueryRowContext(ctx, updateProject,
 		arg.Name,
 		arg.Description,
+		arg.StudentEmail,
+		arg.StudentName,
 		arg.TechStack,
 		arg.Categories,
 		arg.Stars,

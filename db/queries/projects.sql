@@ -17,7 +17,7 @@ SELECT * FROM projects WHERE student_email = ? ORDER BY created_at DESC;
 
 -- name: UpdateProject :one
 UPDATE projects
-SET name = ?, description = ?, tech_stack = ?, categories = ?, stars = ?, repo_url = ?
+SET name = ?, description = ?, student_email = ?, student_name = ?, tech_stack = ?, categories = ?, stars = ?, repo_url = ?
 WHERE id = ?
 RETURNING *;
 

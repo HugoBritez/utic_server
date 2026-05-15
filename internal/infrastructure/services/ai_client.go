@@ -26,7 +26,7 @@ func NewGroqClient(apiKey string, model string) *GroqClient {
 	if model == "" {
 		model = os.Getenv("AI_MODEL")
 		if model == "" {
-			model = "llama-3.1-70b-versatile"
+			model = "llama-3.3-70b-versatile"
 		}
 	}
 	return &GroqClient{
@@ -110,6 +110,7 @@ Respondé SOLO con el JSON válido.`,
 			{"role": "user", "content": prompt},
 		},
 		"temperature": 0.1,
+		"response_format": map[string]string{"type": "json_object"},
 	})
 
 	req, err := http.NewRequestWithContext(ctx, "POST", "https://api.groq.com/openai/v1/chat/completions", bytes.NewBuffer(reqBody))
@@ -160,6 +161,21 @@ Respondé SOLO con el JSON válido.`,
 	var info services.ProjectInfo
 	if err := json.Unmarshal([]byte(content), &info); err != nil {
 		return nil, fmt.Errorf("failed to parse Groq response: %w, raw: %s", err, content)
+	}
+
+	// Fallback: si la IA no devolvió tech_stack pero hay lenguaje, lo inyectamos
+	if len(info.TechStack) == 0 && repoMeta.Language != "" {
+		info.TechStack = []string{repoMeta.Language}
+	}
+
+	// Fallback: si no hay student_name, usamos el owner
+	if info.StudentName == "" {
+		info.StudentName = repoMeta.Owner
+	}
+
+	// Fallback: si no hay email, usamos el del profile
+	if info.StudentEmail == "" && ownerProfile.Email != "" {
+		info.StudentEmail = ownerProfile.Email
 	}
 
 	return &info, nil
