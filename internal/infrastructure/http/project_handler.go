@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/HugoBritez/utic.dev-server/internal/application/projects"
@@ -36,6 +37,7 @@ func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	project, err := h.createUseCase.Execute(r.Context(), req.RepoURL)
 	if err != nil {
+		log.Printf("[ERROR] CreateProject: %v", err)
 		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusInternalServerError)
 		return
 	}

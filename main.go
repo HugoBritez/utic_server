@@ -19,6 +19,18 @@ import (
 	"github.com/HugoBritez/utic.dev-server/internal/infrastructure/db"
 )
 
+func recoveryMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				log.Printf("[PANIC] %v", err)
+				http.Error(w, `{"error":"internal server error"}`, http.StatusInternalServerError)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	// --- Load .env ---
 	godotenv.Load()
@@ -49,7 +61,8 @@ func main() {
 	// --- Router ---
 	r := chi.NewRouter()
 	r.Use(chimiddleware.Logger)
-	r.Use(chimiddleware.Recoverer)
+	r.Use(chimiddleware.RequestID)
+	r.Use(recoveryMiddleware)
 
 	// Public routes
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +93,9 @@ func main() {
 	}
 
 	fmt.Printf("Server running on :%s\n", port)
+	log.Printf("AI_API_KEY set: %v", os.Getenv("AI_API_KEY") != "")
+	log.Printf("API_KEY set: %v", os.Getenv("API_KEY") != "")
+	log.Printf("DB_PATH: %s", dbPath)
 	log.Fatal(http.ListenAndServe(":"+port, r))
 }
  
