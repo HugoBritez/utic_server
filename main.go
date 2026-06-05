@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/HugoBritez/utic.dev-server/internal/application/messages"
 	"github.com/HugoBritez/utic.dev-server/internal/application/projects"
 	"github.com/HugoBritez/utic.dev-server/internal/infrastructure/database"
 	httphandler "github.com/HugoBritez/utic.dev-server/internal/infrastructure/http"
@@ -50,6 +51,9 @@ func main() {
 	if err := database.RunMigrations(sqlDB, "db/schema/001_init.sql"); err != nil {
 		panic("failed to run migrations: " + err.Error())
 	}
+	if err := database.RunMigrations(sqlDB, "db/schema/002_add_messages_features.sql"); err != nil {
+		panic("failed to run messages migration: " + err.Error())
+	}
 
 	// --- Dependencies ---
 	queries := db.New(sqlDB)
@@ -57,6 +61,10 @@ func main() {
 	aiService := aiservice.NewGroqClient("", "")
 	createUseCase := projects.NewCreateProjectUseCase(projectRepo, aiService)
 	projectHandler := httphandler.NewProjectHandler(createUseCase, projectRepo)
+
+	messageRepo := repository.NewMessageRepository(queries, sqlDB)
+	createMessageUseCase := messages.NewCreateMessageUseCase(messageRepo)
+	messageHandler := httphandler.NewMessageHandler(messageRepo, createMessageUseCase)
 
 	// --- Router ---
 	r := chi.NewRouter()
@@ -85,6 +93,10 @@ func main() {
 			key, _ := middleware.GetAPIKeyFromContext(r.Context())
 			w.Write([]byte("Access granted! API key: " + key))
 		})
+
+		r.Post("/api/messages", messageHandler.CreateMessage)
+		r.Get("/api/messages", messageHandler.GetMessages)
+		r.Get("/api/messages/phone-numbers", messageHandler.GetNewPhoneNumbers)
 	})
 
 	port := os.Getenv("PORT")

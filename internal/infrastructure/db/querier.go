@@ -9,8 +9,11 @@ import (
 )
 
 type Querier interface {
+	CreateMessage(ctx context.Context, arg CreateMessageParams) (Messages, error)
 	CreateProject(ctx context.Context, arg CreateProjectParams) (Projects, error)
 	DeleteProject(ctx context.Context, id string) error
+	GetMessages(ctx context.Context) ([]Messages, error)
+	GetNewPhoneNumbers(ctx context.Context) ([]string, error)
 	GetProject(ctx context.Context, id string) (Projects, error)
 	GetProjectByRepoURL(ctx context.Context, repoUrl string) (Projects, error)
 	GetProjects(ctx context.Context) ([]Projects, error)

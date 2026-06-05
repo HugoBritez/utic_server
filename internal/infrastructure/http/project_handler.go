@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/HugoBritez/utic.dev-server/internal/application/projects"
 	"github.com/HugoBritez/utic.dev-server/internal/domain/repositories"
@@ -23,6 +25,21 @@ type createProjectRequest struct {
 	RepoURL string `json:"repo_url"`
 }
 
+func isValidGitHubURL(rawURL string) bool {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return false
+	}
+	if u.Scheme != "https" {
+		return false
+	}
+	if u.Host != "github.com" {
+		return false
+	}
+	parts := strings.Split(strings.Trim(u.Path, "/"), "/")
+	return len(parts) == 2
+}
+
 func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	var req createProjectRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -32,6 +49,11 @@ func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	if req.RepoURL == "" {
 		http.Error(w, `{"error":"repo_url is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	if !isValidGitHubURL(req.RepoURL) {
+		http.Error(w, `{"error":"repo_url must be a valid GitHub URL (https://github.com/owner/repo)"}`, http.StatusBadRequest)
 		return
 	}
 
