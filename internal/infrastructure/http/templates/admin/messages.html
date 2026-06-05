@@ -1,0 +1,22 @@
+<table class="w-full text-left">
+  <thead>
+    <tr class="border-b border-gray-700 text-gray-400 text-sm">
+      <th class="pb-2">Nombre</th>
+      <th class="pb-2">Teléfono</th>
+      <th class="pb-2">Mensaje</th>
+      <th class="pb-2">Fecha</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .}}
+    <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+      <td class="py-2">{{.SenderName}}</td>
+      <td class="py-2 text-gray-400">{{.SenderPhoneNumber}}</td>
+      <td class="py-2 max-w-xs truncate">{{.MessageText}}</td>
+      <td class="py-2 text-gray-400">{{.CreatedAt.Format "2006-01-02 15:04"}}</td>
+    </tr>
+    {{else}}
+    <tr><td colspan="4" class="py-4 text-gray-500">No hay mensajes.</td></tr>
+    {{end}}
+  </tbody>
+</table>

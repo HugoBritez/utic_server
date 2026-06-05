@@ -66,6 +66,9 @@ func main() {
 	createMessageUseCase := messages.NewCreateMessageUseCase(messageRepo)
 	messageHandler := httphandler.NewMessageHandler(messageRepo, createMessageUseCase)
 
+	sessionStore := middleware.NewSessionStore()
+	adminHandler := httphandler.NewAdminHandler(projectRepo, messageRepo, sessionStore)
+
 	// --- Router ---
 	r := chi.NewRouter()
 	r.Use(chimiddleware.Logger)
@@ -79,6 +82,20 @@ func main() {
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
+	})
+
+	// Admin UI (session-based auth)
+	r.Get("/admin/login", adminHandler.Login)
+	r.Post("/admin/login", adminHandler.Login)
+	r.Get("/admin/logout", adminHandler.Logout)
+
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.AdminSession(sessionStore))
+
+		r.Get("/admin", adminHandler.Dashboard)
+		r.Get("/admin/stats", adminHandler.Stats)
+		r.Get("/admin/projects", adminHandler.ProjectsTable)
+		r.Get("/admin/messages", adminHandler.MessagesTable)
 	})
 
 	// Protected routes

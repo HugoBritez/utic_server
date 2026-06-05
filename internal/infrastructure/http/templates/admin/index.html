@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - UTIC Dev Server</title>
+  <script src="https://unpkg.com/htmx.org@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-gray-100">
+
+  <nav class="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-lg font-semibold">UTIC Admin</h1>
+    <div class="flex items-center gap-4">
+      <a href="/admin" class="text-sm text-gray-400 hover:text-white">Dashboard</a>
+      <a href="/admin/logout" class="text-sm text-red-400 hover:text-red-300">Salir</a>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <div hx-get="/admin/stats" hx-trigger="load" hx-target="#stats">
+      <div id="stats" class="text-gray-500">Cargando estadísticas...</div>
+    </div>
+
+    <section class="mt-10">
+      <h2 class="text-lg font-semibold mb-4">Proyectos</h2>
+      <div class="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900 p-4">
+        <div hx-get="/admin/projects" hx-trigger="load" hx-target="#projects-list">
+          <div id="projects-list" class="text-gray-500">Cargando proyectos...</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-10">
+      <h2 class="text-lg font-semibold mb-4">Mensajes</h2>
+      <div class="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900 p-4">
+        <div hx-get="/admin/messages" hx-trigger="load" hx-target="#messages-list">
+          <div id="messages-list" class="text-gray-500">Cargando mensajes...</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
