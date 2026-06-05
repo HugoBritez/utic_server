@@ -39,7 +39,7 @@ func main() {
 	// --- Database ---
 	dbPath := os.Getenv("DB_PATH")
 	if dbPath == "" {
-		dbPath = "./data/app.db"
+		dbPath = "/data/app.db"
 	}
 
 	sqlDB, err := database.NewSQLite(dbPath)
